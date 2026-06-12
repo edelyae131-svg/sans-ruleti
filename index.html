@@ -71,7 +71,7 @@
 
         #canvas {
             border-radius: 50%;
-            transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1);
+            transition: transform 5s cubic-bezier(0.1, 0.8, 0.1, 1);
             z-index: 2;
         }
 
@@ -110,4 +110,137 @@
 
         .btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px #00
+            box-shadow: 0 0 30px #00ff66, 0 0 50px rgba(0, 255, 102, 0.8);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <h2>ŞANS RULETİ 🎰</h2>
+    
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel-glow-ring"></div>
+        <canvas id="canvas" width="360" height="360"></canvas>
+    </div>
+    
+    <button class="btn" onclick="ruletiCevir()">ÇEVİR (500 COINS)</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Ödüller dizisi
+        const segments = ["1k 🎰", "10k 💰", "50k 🎁", "100k 💎", "Pas ❌"];
+        const colors = ["#007bff", "#ffc107", "#e83e8c", "#6f42c1", "#dc3545"];
+        const neonGlows = ["#00d2ff", "#fff000", "#ff007f", "#b800ff", "#ff0000"];
+        
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        const MAX_ALLOWED_WIN = 185000;
+
+        function drawWheel() {
+            const numSegments = segments.length;
+            const anglePerSegment = (2 * Math.PI) / numSegments;
+
+            ctx.clearRect(0, 0, 360, 360);
+
+            for (let i = 0; i < numSegments; i++) {
+                ctx.beginPath();
+                ctx.moveTo(180, 180);
+                // Çark çizimini tam yukarıdan (HTML canvas'a göre -Math.PI/2) başlatıyoruz ki hizalama tam otursun
+                ctx.arc(180, 180, 176, i * anglePerSegment - Math.PI / 2, (i + 1) * anglePerSegment - Math.PI / 2);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+                ctx.stroke();
+
+                // Büyük ve Neon Efektli Yazılar
+                ctx.save();
+                ctx.translate(180, 180);
+                ctx.rotate(i * anglePerSegment + anglePerSegment / 2 - Math.PI / 2);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 19px 'Segoe UI', Arial, sans-serif";
+                
+                ctx.shadowColor = neonGlows[i];
+                ctx.shadowBlur = 15;
+                
+                ctx.textAlign = "right";
+                ctx.fillText(segments[i], 160, 7);
+                ctx.restore();
+            }
+
+            // Orta Göbek
+            ctx.beginPath();
+            ctx.arc(180, 180, 25, 0, 2 * Math.PI);
+            ctx.fillStyle = "#0d0614";
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#00f2fe";
+            ctx.stroke();
+        }
+
+        function ruletiCevir() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            let sans = Math.floor(Math.random() * 100) + 1;
+            let hedefDilim = 0; 
+
+            // Kazanma olasılıkları
+            if (sans <= 40) {
+                hedefDilim = 4; // Pas (%40)
+            } else if (sans <= 70) {
+                hedefDilim = 0; // 1k (%30)
+            } else if (sans <= 88) {
+                hedefDilim = 1; // 10k (%18)
+            } else if (sans <= 97) {
+                hedefDilim = 2; // 50k (%9)
+            } else {
+                hedefDilim = 3; // 100k (%3)
+            }
+
+            // Yapısal Koruma Limit Kontrolü
+            let odulMetni = segments[hedefDilim].replace(/[^0-9kPas]/g, '');
+            let tahminiKazanc = 0;
+            if (odulMetni === "1k") tahminiKazanc = 1000;
+            else if (odulMetni === "10k") tahminiKazanc = 10000;
+            else if (odulMetni === "50k") tahminiKazanc = 50000;
+            else if (odulMetni === "100k") tahminiKazanc = 100000;
+
+            if (tahminiKazanc > MAX_ALLOWED_WIN) {
+                hedefDilim = 4; // Sınırı aşarsa Pas'a çek
+            }
+
+            let numSegments = segments.length;
+            let dilimAcisi = 360 / numSegments; 
+            
+            // Matematiksel Açı Hizalaması (Ok tam tepede (0 derece) olduğu için dönüşü kusursuz eşitliyoruz)
+            let turSayisi = 5 * 360; 
+            let mevcutTurDerecesi = currentRotation % 360;
+            let hedefDerece = (numSegments - hedefDilim) * dilimAcisi - (dilimAcisi / 2);
+            
+            let gerekenDonis = turSayisi + (hedefDerece - mevcutTurDerecesi);
+            if (gerekenDonis < turSayisi) gerekenDonis += 360;
+            
+            currentRotation += gerekenDonis;
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                alert("Kazandığınız Ödül: " + segments[hedefDilim]);
+                isSpinning = false;
+            }, 5000);
+        }
+
+        drawWheel();
+        setTimeout(drawWheel, 200);
+    </script>
+</body>
+</html>
