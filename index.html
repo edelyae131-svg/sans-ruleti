@@ -50,67 +50,10 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Ödüller ve Renkler
         const segments = ["10 Coin", "Pas", "50 Coin", "Hediye", "Pas", "100 Coin", "2 Katı", "Kaybettin"];
         const colors = ["#ff3333", "#111111", "#ff3333", "#111111", "#ff3333", "#111111", "#ff3333", "#111111"];
         let currentRotation = 0;
 
-        // Çarkı Çizme Motoru
         function drawWheel() {
             const numSegments = segments.length;
-            const anglePerSegment = (2 * Math.PI) / numSegments;
-
-            for (let i = 0; i < numSegments; i++) {
-                ctx.beginPath();
-                ctx.moveTo(175, 175);
-                ctx.arc(175, 175, 175, i * anglePerSegment, (i + 1) * anglePerSegment);
-                ctx.fillStyle = colors[i];
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = "#ffffff";
-                ctx.stroke();
-
-                ctx.save();
-                ctx.translate(175, 175);
-                ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
-                ctx.fillStyle = "white";
-                ctx.font = "bold 14px Arial";
-                ctx.textAlign = "right";
-                ctx.fillText(segments[i], 150, 5);
-                ctx.restore();
-            }
-        }
-
-        // Kazanma Olasılığı Ayarı
-        function ruletiCevir() {
-            let sans = Math.floor(Math.random() * 100) + 1;
-            let hedefDilim = 0; 
-
-            if (sans <= 40) {
-                hedefDilim = 1; // %40 ihtimalle Pas
-            } else if (sans <= 70) {
-                hedefDilim = 0; // %30 ihtimalle 10 Coin
-            } else if (sans <= 85) {
-                hedefDilim = 3; // %15 ihtimalle Hediye
-            } else if (sans <= 95) {
-                hedefDilim = 2; // %10 ihtimalle 50 Coin
-            } else {
-                hedefDilim = 5; // %5 ihtimalle 100 Coin
-            }
-
-            let dilimAcisi = 360 / segments.length; 
-            let hedefAci = 1800 + (360 - (hedefDilim * dilimAcisi) - (dilimAcisi / 2));
-            
-            currentRotation = hedefAci;
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                alert("Kazandığınız Ödül: " + segments[hedefDilim]);
-            }, 4000);
-        }
-
-        // İlk açılışta çarkı çiz
-        drawWheel();
-    </script>
-</body>
-</html>
+            const anglePerSegment = (
