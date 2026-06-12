@@ -2,245 +2,54 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siber Şans Ruleti</title>
+    <title>Casino Rulet Masası</title>
     <style>
-        /* Siber arka plan ve neon parlamalar */
-        body {
-            margin: 0;
-            background: #0d0614;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 123, 255, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(111, 66, 193, 0.25) 0%, transparent 40%);
-            color: white;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Arka plandaki siber ağ efekti */
-        body::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0; left: 0;
-            background-image: 
-                linear-gradient(rgba(0, 242, 254, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 254, 0.04) 1px, transparent 1px);
-            background-size: 20px 20px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        h2 {
-            margin-bottom: 30px; 
-            letter-spacing: 3px;
-            font-size: 28px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
-            z-index: 1;
-        }
-        
-        /* Çarkın etrafındaki parlayan siber neon halka */
-        .wheel-container {
-            position: relative;
-            width: 370px;
-            height: 370px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
-        }
-
-        .wheel-glow-ring {
-            position: absolute;
-            width: 364px;
-            height: 364px;
-            border-radius: 50%;
-            box-shadow: 0 0 35px rgba(0, 242, 254, 0.7), inset 0 0 20px rgba(0, 242, 254, 0.5);
-            border: 3px solid #00f2fe;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        #canvas {
-            border-radius: 50%;
-            transition: transform 5s cubic-bezier(0.1, 0.8, 0.1, 1);
-            z-index: 2;
-        }
-
-        /* Parlak kırmızı damla ok */
-        .pointer {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-top: 35px solid #ff2a2a;
-            filter: drop-shadow(0px 0px 10px #ff2a2a);
-            z-index: 10;
-        }
-
-        /* Parlak yeşil buton */
-        .btn {
-            background: #00ff66;
-            color: #000;
-            border: none;
-            padding: 16px 60px;
-            font-size: 20px;
-            font-weight: 900;
-            border-radius: 30px;
-            margin-top: 35px;
-            cursor: pointer;
-            box-shadow: 0 0 20px #00ff66, 0 0 40px rgba(0, 255, 102, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-            z-index: 1;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px #00ff66, 0 0 50px rgba(0, 255, 102, 0.8);
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
+        body { background-color: #0d3815; color: white; font-family: Arial, sans-serif; text-align: center; }
+        .masa-container { max-width: 800px; margin: 20px auto; padding: 20px; border: 5px solid #c5a059; border-radius: 10px; background: #0b2e13; }
+        .bahis-alanlari { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .alan { border: 2px solid #fff; padding: 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .alan:hover { background: rgba(255,255,255,0.2); }
+        .fis-alani { display: flex; justify-content: center; gap: 15px; margin: 20px; }
+        .fis { width: 60px; height: 60px; border-radius: 50%; border: 3px dashed #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
+        .bakiye-paneli { font-size: 28px; color: #ffd700; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <h2>ŞANS RULETİ 🎰</h2>
-    
-    <div class="wheel-container">
-        <div class="pointer"></div>
-        <div class="wheel-glow-ring"></div>
-        <canvas id="canvas" width="360" height="360"></canvas>
+    <div class="bakiye-paneli">Denge: <span id="bakiye">10000</span> Coins</div>
+
+    <div class="masa-container">
+        <div class="bahis-alanlari">
+            <div class="alan" onclick="bahisYap('0')">0</div>
+            <div class="alan" onclick="bahisYap('1-12')">1-12</div>
+            <div class="alan" onclick="bahisYap('Kirmizi')">Kırmızı</div>
+            <div class="alan" onclick="bahisYap('Siyah')">Siyah</div>
+            <div class="alan" onclick="bahisYap('Tek')">Tek</div>
+            <div class="alan" onclick="bahisYap('Çift')">Çift</div>
+        </div>
     </div>
-    
-    <button class="btn" onclick="ruletiCevir()">ÇEVİR (500 COINS)</button>
+
+    <div class="fis-alani">
+        <div class="fis" style="background:#e91e63" onclick="fisSec(50)">50</div>
+        <div class="fis" style="background:#2196f3" onclick="fisSec(500)">500</div>
+        <div class="fis" style="background:#9c27b0" onclick="fisSec(5000)">5k</div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Ödüller dizisi
-        const segments = ["1k 🎰", "10k 💰", "50k 🎁", "100k 💎", "Pas ❌"];
-        const colors = ["#007bff", "#ffc107", "#e83e8c", "#6f42c1", "#dc3545"];
-        const neonGlows = ["#00d2ff", "#fff000", "#ff007f", "#b800ff", "#ff0000"];
-        
-        let currentRotation = 0;
-        let isSpinning = false;
+        let bakiye = 10000;
+        let seciliFis = 50;
 
-        const MAX_ALLOWED_WIN = 185000;
+        function fisSec(miktar) { seciliFis = miktar; alert("Seçili Fiş: " + miktar); }
 
-        function drawWheel() {
-            const numSegments = segments.length;
-            const anglePerSegment = (2 * Math.PI) / numSegments;
-
-            ctx.clearRect(0, 0, 360, 360);
-
-            for (let i = 0; i < numSegments; i++) {
-                ctx.beginPath();
-                ctx.moveTo(180, 180);
-                // Çark çizimini tam yukarıdan (HTML canvas'a göre -Math.PI/2) başlatıyoruz ki hizalama tam otursun
-                ctx.arc(180, 180, 176, i * anglePerSegment - Math.PI / 2, (i + 1) * anglePerSegment - Math.PI / 2);
-                ctx.fillStyle = colors[i];
-                ctx.fill();
-                
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-                ctx.stroke();
-
-                // Büyük ve Neon Efektli Yazılar
-                ctx.save();
-                ctx.translate(180, 180);
-                ctx.rotate(i * anglePerSegment + anglePerSegment / 2 - Math.PI / 2);
-                ctx.fillStyle = "white";
-                ctx.font = "bold 19px 'Segoe UI', Arial, sans-serif";
-                
-                ctx.shadowColor = neonGlows[i];
-                ctx.shadowBlur = 15;
-                
-                ctx.textAlign = "right";
-                ctx.fillText(segments[i], 160, 7);
-                ctx.restore();
-            }
-
-            // Orta Göbek
-            ctx.beginPath();
-            ctx.arc(180, 180, 25, 0, 2 * Math.PI);
-            ctx.fillStyle = "#0d0614";
-            ctx.fill();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "#00f2fe";
-            ctx.stroke();
-        }
-
-        function ruletiCevir() {
-            if (isSpinning) return;
-            isSpinning = true;
-
-            let sans = Math.floor(Math.random() * 100) + 1;
-            let hedefDilim = 0; 
-
-            // Kazanma olasılıkları
-            if (sans <= 40) {
-                hedefDilim = 4; // Pas (%40)
-            } else if (sans <= 70) {
-                hedefDilim = 0; // 1k (%30)
-            } else if (sans <= 88) {
-                hedefDilim = 1; // 10k (%18)
-            } else if (sans <= 97) {
-                hedefDilim = 2; // 50k (%9)
+        function bahisYap(alan) {
+            if (bakiye >= seciliFis) {
+                bakiye -= seciliFis;
+                document.getElementById('bakiye').innerText = bakiye;
+                alert(alan + " alanına " + seciliFis + " yatırıldı!");
             } else {
-                hedefDilim = 3; // 100k (%3)
+                alert("Yetersiz bakiye!");
             }
-
-            // Yapısal Koruma Limit Kontrolü
-            let odulMetni = segments[hedefDilim].replace(/[^0-9kPas]/g, '');
-            let tahminiKazanc = 0;
-            if (odulMetni === "1k") tahminiKazanc = 1000;
-            else if (odulMetni === "10k") tahminiKazanc = 10000;
-            else if (odulMetni === "50k") tahminiKazanc = 50000;
-            else if (odulMetni === "100k") tahminiKazanc = 100000;
-
-            if (tahminiKazanc > MAX_ALLOWED_WIN) {
-                hedefDilim = 4; // Sınırı aşarsa Pas'a çek
-            }
-
-            let numSegments = segments.length;
-            let dilimAcisi = 360 / numSegments; 
-            
-            // Matematiksel Açı Hizalaması (Ok tam tepede (0 derece) olduğu için dönüşü kusursuz eşitliyoruz)
-            let turSayisi = 5 * 360; 
-            let mevcutTurDerecesi = currentRotation % 360;
-            let hedefDerece = (numSegments - hedefDilim) * dilimAcisi - (dilimAcisi / 2);
-            
-            let gerekenDonis = turSayisi + (hedefDerece - mevcutTurDerecesi);
-            if (gerekenDonis < turSayisi) gerekenDonis += 360;
-            
-            currentRotation += gerekenDonis;
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                alert("Kazandığınız Ödül: " + segments[hedefDilim]);
-                isSpinning = false;
-            }, 5000);
         }
-
-        drawWheel();
-        setTimeout(drawWheel, 200);
     </script>
 </body>
 </html>
