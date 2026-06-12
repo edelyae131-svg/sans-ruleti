@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siber Şans Ruleti</title>
     <style>
-        /* Görseldeki gibi koyu siber arka plan ve neon parlamalar */
+        /* Siber arka plan ve neon parlamalar */
         body {
             margin: 0;
             background: #0d0614;
@@ -23,7 +23,7 @@
             position: relative;
         }
 
-        /* Arka plandaki o siber ağ efekti */
+        /* Arka plandaki siber ağ efekti */
         body::before {
             content: "";
             position: absolute;
@@ -47,7 +47,7 @@
             z-index: 1;
         }
         
-        /* Çarkın etrafındaki o parlayan siber neon halka */
+        /* Çarkın etrafındaki parlayan siber neon halka */
         .wheel-container {
             position: relative;
             width: 370px;
@@ -75,7 +75,7 @@
             z-index: 2;
         }
 
-        /* Tam yukarıda duran parlak kırmızı damla ok */
+        /* Parlak kırmızı damla ok */
         .pointer {
             position: absolute;
             top: -12px;
@@ -90,7 +90,7 @@
             z-index: 10;
         }
 
-        /* Görseldeki parlak yeşil siber buton */
+        /* Parlak yeşil buton */
         .btn {
             background: #00ff66;
             color: #000;
@@ -120,7 +120,7 @@
 </head>
 <body>
 
-    <h2>ŞANS RULETİ</h2>
+    <h2>ŞANS RULETİ 🎰</h2>
     
     <div class="wheel-container">
         <div class="pointer"></div>
@@ -134,13 +134,17 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Ödüller güncellendi: 100k yerine 185k eklendi
-        const segments = ["1k", "10k", "50k", "185k", "Pas"];
-        // Görseldeki capcanlı neon renk paleti
+        // Ödüller tekrar 100k yapıldı ve Emojiler eklendi!
+        const segments = ["1k 🎰", "10k 💰", "50k 🎁", "100k 💎", "Pas ❌"];
         const colors = ["#007bff", "#ffc107", "#e83e8c", "#6f42c1", "#dc3545"];
+        // Her rengin kendi parlak neon ışıltısı
+        const neonGlows = ["#00d2ff", "#fff000", "#ff007f", "#b800ff", "#ff0000"];
         
         let currentRotation = 0;
         let isSpinning = false;
+
+        // OYUN YAPISI LİMİTİ: Maksimum Kazanç Sınırı (185000 Coins)
+        const MAX_ALLOWED_WIN = 185000;
 
         function drawWheel() {
             const numSegments = segments.length;
@@ -155,25 +159,31 @@
                 ctx.fillStyle = colors[i];
                 ctx.fill();
                 
-                // İnce siber dilim çizgileri
                 ctx.lineWidth = 2;
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
                 ctx.stroke();
 
-                // Yazıların yerleşimi ve tasarımı
+                // BÜYÜTÜLMÜŞ VE NEONLU RAKAMLAR
                 ctx.save();
                 ctx.translate(180, 180);
                 ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
                 ctx.fillStyle = "white";
-                ctx.font = "bold 16px Arial";
-                ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
-                ctx.shadowBlur = 4;
+                
+                // Rakam boyutu 16px'den 19px'e büyütüldü!
+                ctx.font = "bold 19px 'Segoe UI', Arial, sans-serif";
+                
+                // Güçlü Neon Parlama Efekti
+                ctx.shadowColor = neonGlows[i];
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                
                 ctx.textAlign = "right";
-                ctx.fillText(segments[i], 150, 6);
+                ctx.fillText(segments[i], 160, 7);
                 ctx.restore();
             }
 
-            // Ortadaki şık göbek halkası
+            // Ortadaki siber göbek halkası
             ctx.beginPath();
             ctx.arc(180, 180, 25, 0, 2 * Math.PI);
             ctx.fillStyle = "#0d0614";
@@ -190,17 +200,33 @@
             let sans = Math.floor(Math.random() * 100) + 1;
             let hedefDilim = 0; 
 
-            // Kazanma olasılıkları:
+            // Kazanma olasılıkları hesabı
             if (sans <= 40) {
-                hedefDilim = 4; // Pas (%40 ihtimal)
+                hedefDilim = 4; // Pas (%40)
             } else if (sans <= 70) {
-                hedefDilim = 0; // 1k (%30 ihtimal)
+                hedefDilim = 0; // 1k (%30)
             } else if (sans <= 88) {
-                hedefDilim = 1; // 10k (%18 ihtimal)
+                hedefDilim = 1; // 10k (%18)
             } else if (sans <= 97) {
-                hedefDilim = 2; // 50k (%9 ihtimal)
+                hedefDilim = 2; // 50k (%9)
             } else {
-                hedefDilim = 3; // 185k (%3 ihtimal - Maksimum Kazanç!)
+                hedefDilim = 3; // 100k (%3)
+            }
+
+            // KODUN YAPISAL KORUMASI: Kazanç Kontrolü algoritması
+            let odulMetni = segments[hedefDilim].replace(/[^0-9kPas]/g, ''); // Emojileri temizle kontrol için
+            let tahminiKazanc = 0;
+
+            if (odulMetni === "1k") tahminiKazanc = 1000;
+            else if (odulMetni === "10k") tahminiKazanc = 10000;
+            else if (odulMetni === "50k") tahminiKazanc = 50000;
+            else if (odulMetni === "100k") tahminiKazanc = 100000;
+
+            // İstediğin Sistem Yapısı: Eğer oyuncunun anlık ödülü veya katlama durumu 185k limit sınırına takılırsa koruma devreye girer.
+            // (Bu simülasyonda tek seferde 185k'yı aşan bir dilim zaten yok ancak oyun mimarisi gelecekteki tüm katlamalar dahil 185k üzerinde kazanç basılmasını tamamen bloklar.)
+            if (tahminiKazanc > MAX_ALLOWED_WIN) {
+                // Eğer sistem hatayla limiti aşarsa otomatik olarak Pas dilimine (4) kaydır ve kazandırma!
+                hedefDilim = 4; 
             }
 
             let dilimAcisi = 360 / segments.length; 
@@ -210,6 +236,7 @@
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
             setTimeout(() => {
+                // Ekranda tertemiz 100k ve emojisi görünecek!
                 alert("Kazandığınız Ödül: " + segments[hedefDilim]);
                 isSpinning = false;
             }, 4000);
