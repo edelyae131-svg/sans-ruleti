@@ -15,34 +15,58 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            overflow: hidden;
+        }
+        .wheel-container {
+            position: relative;
+            width: 360px;
+            height: 360px;
         }
         #canvas {
             background: #222;
             border-radius: 50%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            max-width: 90vw;
-            max-height: 90vw;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
             transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1);
+        }
+        /* Tepedeki kırmızı ok */
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 35px solid #ff2a2a;
+            z-index: 10;
         }
         .btn {
             background-color: #00ff66;
             color: black;
             border: none;
-            padding: 15px 40px;
-            font-size: 18px;
+            padding: 15px 50px;
+            font-size: 20px;
             font-weight: bold;
             border-radius: 30px;
-            margin-top: 20px;
+            margin-top: 30px;
             cursor: pointer;
-            box-shadow: 0 5px 10px rgba(0, 255, 102, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 255, 102, 0.4);
+            text-transform: uppercase;
+        }
+        .btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
 
-    <h2 style="margin-bottom: 20px;">ŞANS RULETİ</h2>
+    <h2 style="margin-bottom: 25px; letter-spacing: 2px;">ŞANS RULETİ</h2>
     
-    <canvas id="canvas" width="350" height="350"></canvas>
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas id="canvas" width="360" height="360"></canvas>
+    </div>
     
     <button class="btn" onclick="ruletiCevir()">ÇEVİR (10 COIN)</button>
 
@@ -50,10 +74,78 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        const segments = ["10 Coin", "Pas", "50 Coin", "Hediye", "Pas", "100 Coin", "2 Katı", "Kaybettin"];
-        const colors = ["#ff3333", "#111111", "#ff3333", "#111111", "#ff3333", "#111111", "#ff3333", "#111111"];
+        // Yeni Ödüller (6 Dilim halinde eşit bölündü)
+        const segments = ["500 Coins", "Hediye", "Pas", "3k", "10k", "30k"];
+        // Rengarenk dilim renkleri
+        const colors = ["#007bff", "#ffc107", "#e83e8c", "#28a745", "#fd7e14", "#6f42c1"];
+        
         let currentRotation = 0;
+        let isSpinning = false;
 
         function drawWheel() {
             const numSegments = segments.length;
-            const anglePerSegment = (
+            const anglePerSegment = (2 * Math.PI) / numSegments;
+
+            ctx.clearRect(0, 0, 360, 360);
+
+            for (let i = 0; i < numSegments; i++) {
+                ctx.beginPath();
+                ctx.moveTo(180, 180);
+                ctx.arc(180, 180, 180, i * anglePerSegment, (i + 1) * anglePerSegment);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#ffffff";
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(180, 180);
+                ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 16px Arial";
+                ctx.textAlign = "right";
+                ctx.fillText(segments[i], 160, 5);
+                ctx.restore();
+            }
+        }
+
+        function ruletiCevir() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            let sans = Math.floor(Math.random() * 100) + 1;
+            let hedefDilim = 0; 
+
+            // Kazanma olasılıkları dengesi:
+            if (sans <= 35) {
+                hedefDilim = 2; // Pas (%35 ihtimal)
+            } else if (sans <= 65) {
+                hedefDilim = 0; // 500 Coins (%30 ihtimal)
+            } else if (sans <= 80) {
+                hedefDilim = 1; // Hediye (%15 ihtimal)
+            } else if (sans <= 90) {
+                hedefDilim = 3; // 3k (%10 ihtimal)
+            } else if (sans <= 97) {
+                hedefDilim = 4; // 10k (%7 ihtimal)
+            } else {
+                hedefDilim = 5; // 30k (%3 ihtimal - Büyük Ödül!)
+            }
+
+            let dilimAcisi = 360 / segments.length; 
+            // Çarkın tam olarak doğru ödülün üzerinde durmasını sağlayan hesaplama
+            let hedefAci = currentRotation + 1800 + (270 - (hedefDilim * dilimAcisi) - (dilimAcisi / 2));
+            
+            currentRotation = hedefAci;
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                alert("Kazandığınız Ödül: " + segments[hedefDilim]);
+                isSpinning = false;
+            }, 4000);
+        }
+
+        drawWheel();
+        setTimeout(drawWheel, 200);
+    </script>
+</body>
+</html>
