@@ -2,53 +2,83 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Casino Rulet Masası</title>
+    <title>COD:EX Roulette</title>
     <style>
-        body { background-color: #0d3815; color: white; font-family: Arial, sans-serif; text-align: center; }
-        .masa-container { max-width: 800px; margin: 20px auto; padding: 20px; border: 5px solid #c5a059; border-radius: 10px; background: #0b2e13; }
-        .bahis-alanlari { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .alan { border: 2px solid #fff; padding: 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .alan:hover { background: rgba(255,255,255,0.2); }
-        .fis-alani { display: flex; justify-content: center; gap: 15px; margin: 20px; }
-        .fis { width: 60px; height: 60px; border-radius: 50%; border: 3px dashed #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
-        .bakiye-paneli { font-size: 28px; color: #ffd700; margin-bottom: 20px; }
+        body { background-color: #0b2e13; color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; padding: 10px; }
+        
+        /* Denge Paneli */
+        .header { background: #1a1a1a; padding: 15px; border-bottom: 4px solid #c5a059; font-size: 24px; font-weight: bold; color: #ffd700; margin-bottom: 20px; }
+        
+        /* Çark Alanı */
+        .rulet-cark { width: 300px; height: 300px; border: 10px solid #c5a059; border-radius: 50%; margin: 10px auto; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
+        #cark { width: 280px; height: 280px; background: conic-gradient(red 0 50%, black 50% 100%); border-radius: 50%; transition: transform 4s cubic-bezier(0.17, 0.67, 0.17, 0.99); }
+        
+        /* Masa Tasarımı */
+        .masa-container { background: #0b4e1a; border: 5px solid #c5a059; border-radius: 15px; padding: 20px; max-width: 500px; margin: 20px auto; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .btn-bahis { background: #0e6c25; border: 2px solid #fff; color: white; padding: 15px 5px; cursor: pointer; font-weight: bold; border-radius: 5px; }
+        .btn-bahis:hover { background: #158f33; }
+        
+        /* Fişler */
+        .fis-bar { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .fis { width: 60px; height: 60px; border-radius: 50%; border: 3px dashed #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: #555; }
+        
+        /* Buton */
+        .btn-cevir { margin-top: 25px; padding: 15px 50px; background: #ffd700; border: none; font-weight: bold; font-size: 18px; border-radius: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="bakiye-paneli">Denge: <span id="bakiye">10000</span> Coins</div>
+    <div class="header">Denge: <span id="bakiye">10000</span> Coins</div>
+
+    <div class="rulet-cark">
+        <div id="cark"></div>
+    </div>
 
     <div class="masa-container">
-        <div class="bahis-alanlari">
-            <div class="alan" onclick="bahisYap('0')">0</div>
-            <div class="alan" onclick="bahisYap('1-12')">1-12</div>
-            <div class="alan" onclick="bahisYap('Kirmizi')">Kırmızı</div>
-            <div class="alan" onclick="bahisYap('Siyah')">Siyah</div>
-            <div class="alan" onclick="bahisYap('Tek')">Tek</div>
-            <div class="alan" onclick="bahisYap('Çift')">Çift</div>
+        <div class="grid">
+            <button class="btn-bahis" onclick="bahis('0')">0</button>
+            <button class="btn-bahis" onclick="bahis('1-12')">1-12</button>
+            <button class="btn-bahis" onclick="bahis('13-24')">13-24</button>
+            <button class="btn-bahis" onclick="bahis('25-36')">25-36</button>
+            <button class="btn-bahis" onclick="bahis('Tek')">Tek</button>
+            <button class="btn-bahis" onclick="bahis('Çift')">Çift</button>
+            <button class="btn-bahis" onclick="bahis('Kırmızı')">Kırmızı</button>
+            <button class="btn-bahis" onclick="bahis('Siyah')">Siyah</button>
         </div>
     </div>
 
-    <div class="fis-alani">
+    <div class="fis-bar">
         <div class="fis" style="background:#e91e63" onclick="fisSec(50)">50</div>
-        <div class="fis" style="background:#2196f3" onclick="fisSec(500)">500</div>
+        <div class="fis" style="background:#1e88e5" onclick="fisSec(500)">500</div>
         <div class="fis" style="background:#9c27b0" onclick="fisSec(5000)">5k</div>
     </div>
 
+    <button class="btn-cevir" onclick="cevir()">ÇEVİR</button>
+
     <script>
         let bakiye = 10000;
-        let seciliFis = 50;
-
-        function fisSec(miktar) { seciliFis = miktar; alert("Seçili Fiş: " + miktar); }
-
-        function bahisYap(alan) {
-            if (bakiye >= seciliFis) {
+        let seciliFis = 500;
+        
+        function fisSec(miktar) { seciliFis = miktar; alert("Seçilen Fiş: " + miktar); }
+        
+        function bahis(alan) {
+            if(bakiye >= seciliFis) {
                 bakiye -= seciliFis;
                 document.getElementById('bakiye').innerText = bakiye;
-                alert(alan + " alanına " + seciliFis + " yatırıldı!");
-            } else {
-                alert("Yetersiz bakiye!");
-            }
+            } else { alert("Yetersiz Bakiye!"); }
+        }
+
+        function cevir() {
+            let cark = document.getElementById('cark');
+            cark.style.transform = `rotate(${Math.random() * 3600 + 720}deg)`;
+            setTimeout(() => {
+                let kazanc = seciliFis * 2;
+                if (kazanc > 185000) kazanc = 185000;
+                bakiye += kazanc;
+                document.getElementById('bakiye').innerText = bakiye;
+                alert("Rulet durdu! Kazancın: " + kazanc);
+            }, 4000);
         }
     </script>
 </body>
